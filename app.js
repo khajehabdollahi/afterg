@@ -48,7 +48,11 @@ const sessionOptions = {
 app.use(session(sessionOptions));
 app.use(flash());
 
-mongoose.connect("mongodb://localhost:27017/room", {
+const dburl = process.env.DB_URL || "mongodb://localhost:27017/backery";
+
+
+
+mongoose.connect(dburl, {
   useNewUrlParser: true,
   // useCreateIndex:true,
   useUnifiedTopology: true,
@@ -59,6 +63,7 @@ db.on("error", console.error.bind(console, "connection error"));
 db.once("open", () => {
   console.log("Database connected");
 });
+
 
 app.get("/", (req, res) => {
   res.send("Yes it is going well");
