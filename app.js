@@ -32,6 +32,9 @@ const console = require("console");
 
 const upload = multer({ storage });
 
+const dbUrl = process.env.DB_URL 
+
+
 const Room = require("./models/room");
 const app = express();
 
@@ -46,10 +49,10 @@ const sessionOptions = {
 app.use(session(sessionOptions));
 app.use(flash());
 
-mongoose.connect("mongodb://localhost:27017/room", {
+mongoose.connect(dbUrl, {
   useNewUrlParser: true,
-  // useCreateIndex:true,
   useUnifiedTopology: true,
+  useFindAndModify: false,
 });
 
 const db = mongoose.connection;
