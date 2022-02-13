@@ -5,11 +5,7 @@ const session = require('express-session')
 const flash=require('connect-flash')
 
 const Room= require('./models/room')
-
-
-
 const app = express()
-
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
@@ -49,6 +45,6 @@ app.get('/registeraroom',async (req, res) => {
   res.send(room)
 })
 
-app.listen(3000, () => {
+app.listen(process.env.PORT || 3000, () => {
   console.log('Serving on port 3000')
 })
