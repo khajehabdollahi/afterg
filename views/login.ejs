@@ -1,0 +1,34 @@
+
+<% layout('layout/boilerplate') %> 
+ 
+<br><br>
+<div class="d-flex justify-content-center">
+<main class="card col-6"; style="text-align:center">
+    <form  action="/login" method="POST" class="validated-form novalidate ">
+      <div class="mb-3">
+      <label class="form-label" for="username">Email</label><br>
+      <input class="form-control" type="email" name="username" id="username" placeholder="email"required>    
+      <div class="valid-feedback">
+        looks good!
+      </div>  
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="password">Password</label><br>
+      <input class="form-control" type="password" name="password" id="password" required>
+    </div>
+
+    <button type="submit" class="btn-success">LOG IN</button> <br/> <br>
+    <a href="/forgetpass">Forgot Password?</a>
+    </form>
+  
+
+  <br/>
+  
+    <h4 >Don't you have an account?</h4> <br/>
+   
+    <a href='/Register'>Register an account</a> <br>
+
+
+</main>
+  </div>

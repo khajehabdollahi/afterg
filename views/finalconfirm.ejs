@@ -1,0 +1,39 @@
+<% layout('layout/boilerplate') %> 
+<br><br>
+<div class="d-flex justify-content-center">
+<main class="card col-8"; style="text-align:center">
+    <div class="col-lg-12">
+      <h5> This is the User that you want to confirm: </h5>
+      <ul>
+        <li>
+        Name: <%=requesterUser.name %>
+        </li>
+        <li>
+        Email: <%=requesterUser.username %>
+        </li>
+        <li>
+        Phone Number: <%=requesterUser.schoolPhoneNumber %>
+        </li>
+        <li> User's School:
+<a href="/news/<%=school.id %> "> <%=school.schoolsname %>  </a>        </li>
+      </ul>
+      
+
+     
+  <form action="/finalconfirm/<%=requesterUser.id %>/<%=cid %>   " method="POST">
+
+
+    <select name="confirmation" id="confirmation">
+    <option> <%=requesterUser.confirmation %>  </option>
+    <option  value='Yes' > Yes</option>
+    <option value='No' >No</option>
+    
+  </select>
+<br>
+<br>
+<button type="submit" class="btn btn-success">Send</button> <br><br>
+</form>
+
+  </div>
+</main>
+  </div>

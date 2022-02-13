@@ -1,0 +1,25 @@
+<% layout('layout/boilerplate') %> 
+<br><br>
+<div class="d-flex justify-content-center">
+<main class="card col-8"; style="text-align:center">
+    <div class="col-lg-12">
+       <form  action="/userconfirm/<%=confirm.id %>" method="POST" >
+<br>
+ 
+  <h3>Ask this user to confirm you:   </h3> <br>
+<h1>  <a href="http:/users/<%=sid %> "><%=confirmRequstTouser.name %></a>
+</h1><br>
+<h3>Write a message to the user</h3>
+<textarea id="text" name="text"
+          rows="5" cols="50">
+
+</textarea>
+  <br>
+  <button type="submit" class="btn btn-success">Request  Confirmation</button>
+
+
+
+  </form> <br>
+  </div>
+</main>
+  </div>

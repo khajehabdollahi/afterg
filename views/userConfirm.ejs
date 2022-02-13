@@ -1,0 +1,26 @@
+ <% layout('layout/boilerplate') %> 
+<br>
+<div class="d-flex justify-content-center">
+<main class="card col-6"; style="text-align:center">
+
+  <%for(let confirm of confirmRequester){ %> 
+
+<%=confirm.id %> 
+
+
+  <form action="/userconfirm/<%=confirm.id %>  " method="POST">
+
+
+    <select name="confirmation" id="confirmation">
+    <option>Waiting for confirmation?</option>
+    <option  value='Yes' > Yes</option>
+    <option value='No' >No</option>
+    
+  </select>
+<br>
+<br>
+<button type="submit" class="btn btn-success">Send</button> <br><br>
+</form>
+<% } %> 
+</main>
+</div>

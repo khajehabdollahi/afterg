@@ -1,0 +1,17 @@
+<% layout('layout/boilerplate') %>  <br>
+<div class="d-flex justify-content-center">
+<main class="card col-6"; style="text-align:center">
+  <h4>Add image to your school</h4><br>
+  <h5>Your image shouldent be bigger than...</h5><br>
+  <form action="/news/<%=school._id %>?_method=PUT " method="POST" enctype="multipart/form-data">
+    
+  <input type="file" name="image" id="image" > <br/> <br/>
+
+
+
+ 
+  <button type="submit" class="btn btn-success">Add image</button> </form>
+  </form>
+  <br>
+</main>
+</div>

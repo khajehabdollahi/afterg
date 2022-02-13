@@ -1,0 +1,33 @@
+<% layout('layout/boilerplate') %>
+
+<div class="container d-flex justify-content-center">
+  <div class="row">
+    <div class="col-8 card">
+      <form  action="/register" method="POST" class="validated-form novalidate">
+        <div class="mb-3">
+          <br>
+          <label class="form-label" for="username">Email</label><br>
+          <input class="form-control" type="email" name="username" placeholder=""id="email" placeholder="email"required>
+         <br>
+          <div class="mb-3">
+          <label class="form-label" for="name">Your's or your school's name</label><br>
+          <input class="form-control" type="text" name="name" id="name" placeholder="Please write ur name" required>
+        </div>
+          <label class="form-label" for="username">Schools Phone Number</label><br>
+          <input class="form-control" type="Nuber" name="schoolPhoneNumber" placeholder=""id="schoolPhoneNumber" placeholder="Phone Number">
+        </div> 
+       
+        
+
+        <div class="mb-3">
+          <label class="form-label" for="password">Password</label><br>
+          <h9>Password should be at least 6 characters and contain letters, Capital letters, symboles and numbers</h9>
+          <input class="form-control" type="password" name="password" id="password" required>
+        </div>
+
+        <button type="submit" class="btn-success">Register</button><br><br>
+      </form>
+
+    </div>
+  </div>
+</div>

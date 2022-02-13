@@ -1,0 +1,19 @@
+<% layout('layout/boilerplate') %> 
+<br>
+<div class="d-flex justify-content-center">
+<main class="card col-6"; style="text-align:center">
+  <h4> Are you sure that You want to delete your text? </h4>
+
+
+  <form action="/deletetextconfirm/<%= text.id %> %>  " method="get">
+  <br>
+<button  class="btn btn-danger" type="submit">Yes delete it</button>
+
+  </form> <br><br>
+ <form action="/alldialogues" method="get">
+  <button class="btn btn-success">NO I want to keep my text</button>
+  
+  </form> <br><br>
+  </main>
+  </div>
+

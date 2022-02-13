@@ -2,7 +2,26 @@ const express = require('express')
 const path = require("path");
 const mongoose = require("mongoose");
 const session = require('express-session')
-const flash=require('connect-flash')
+const flash = require('connect-flash')
+
+
+const mailer = require("./views/mailer");
+const mailerForget = require("./views/mailerForget");
+
+const Friendship = require("./models/friendship");
+// const Confirm = require("./models/confirm");
+const ejsMate = require("ejs-mate");
+const methodOverride = require("method-override");
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+
+
+// const User = require("./models/User");
+// const Text = require("./models/Text");
+// const Newschool = require("./models/school");
+
+
+
 
 const Room= require('./models/room')
 const app = express()
