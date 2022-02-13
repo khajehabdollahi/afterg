@@ -121,9 +121,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/", (req, res) => {
-  res.send("Yes it is going well very well fantastic");
-});
+
 
 
 const requiredLogin = (req, res, next) => {
@@ -412,6 +410,8 @@ app.put("/schoolimagedelete/:id", async (req, res) => {
 app.get("/", (req, res) => {
   res.render("home");
 });
+
+
 
 app.get("/userconfirm/:uid/:sid", async (req, res) => {
   const { uid } = req.params;
