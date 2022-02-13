@@ -125,13 +125,56 @@ app.get("/", (req, res) => {
   res.send("Yes it is going well very well");
 });
 
-app.get("/registeraroom", async (req, res) => {
-  const room = new Room({ title: "a good room" });
-  await room.save();
 
-  res.send(room);
+const requiredLogin = (req, res, next) => {
+  if (!req.user) {
+    return res.redirect("/login");
+  }
+  next();
+};
+
+app.get("/secret", (req, res) => {
+  if (!req.session.user_id) {
+    return res.redirect("/login");
+  }
+  res.render("secret");
 });
 
-app.listen(process.env.PORT || 3000, () => {
-  console.log("Serving on port 3000");
+app.get("/newones", requiredLogin, async (req, res) => {
+  const id = req.user.id;
+  const school = await Newschool.findOne({ "creator.id": id });
+
+  if (school) {
+    res.send("You have already registered a school");
+  } else {
+    res.render("newone");
+  }
+});
+
+app.post("/news", upload.single("image"), async (req, res) => {
+  // console.log(req.schoolody, req.file)
+  const input = req.body;
+  const school = new Newschool(input);
+  school.schoolsname = req.body.schoolsname.toLowerCase();
+  school.city = req.body.city.toLowerCase();
+  school.provience = req.body.provience.toLowerCase();
+  school.district = req.body.district.toLowerCase();
+  school.Street = req.body.Street.toLowerCase();
+  school.line = req.body.line.toLowerCase();
+  school.creator.username = req.user.username;
+  school.creator.name = req.user.name;
+  school.creator.id = req.user.id;
+
+  await school.save();
+
+  res.redirect("/");
+});
+
+
+app.use((req, res) => {
+  res.status(404).send(`<h1>The page is not defined</h1>`);
+});
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`School SERVER RUNNING! on ${port}`);
 });
