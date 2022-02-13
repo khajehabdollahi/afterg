@@ -171,6 +171,68 @@ app.post("/news", upload.single("image"), async (req, res) => {
 });
 
 
+app.put("/news/:id", upload.single("image"), async (req, res) => {
+  const { id } = req.params;
+  const cuId = req.user.id;
+  const data = req.body;
+
+  school = await Newschool.findByIdAndUpdate(id, data);
+  school.image = req.file.path;
+  school.save();
+  res.redirect("/news/" + id + "/" + cuId);
+});
+
+app.get("/news/:id", async (req, res) => {
+  const { id } = req.params;
+  //finding the school
+  const school = await Newschool.findById(id);
+
+  const schoolCretorId = school.creator.id;
+  const schoolCreatorUser = await User.findById(schoolCretorId);
+
+  // Finding if there is a friendship with this school Id
+  const friendships = await Friendship.find({ schoolId: id });
+  const userId = friendships.friendRequesterID;
+  const user = await User.findById(userId);
+
+  // Finding users who sent friendship to
+  const uId = friendships.friendrequesterId;
+  //finding all friendsships
+  const allFriendships = await Friendship.find({});
+
+  let friendRequesterID = undefined;
+  for (let f of allFriendships) {
+    if (req.user) {
+      if (req.user.id === f.friendrequesterId) {
+        friendRequesterID = f.friendrequesterId;
+      } else {
+        friendRequesterID = undefined;
+      }
+    }
+  }
+
+  const schoolFriend = await Newschool.findOne({ "creator.id": uId });
+
+  res.render("schoolDetail", {
+    school,
+    friendships,
+    schoolFriend,
+    uId,
+    allFriendships,
+    friendRequesterID,
+    schoolCreatorUser,
+  });
+});
+
+app.get("/news/:id/edit", requiredLogin, async (req, res) => {
+  const { id } = req.params;
+
+  const school = await Newschool.findById(id);
+  res.render("edit", { school });
+});
+
+
+
 app.use((req, res) => {
   res.status(404).send(`<h1>The page is not defined</h1>`);
 });
