@@ -16,6 +16,21 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 
 
+const User = require("./models/User");
+const Text = require("./models/Text");
+const Newschool = require("./models/school");
+
+const MongoDBStore = require("connect-mongo");
+
+const multer = require("multer");
+
+const uuid = require("uuid");
+
+const { storage } = require("./cloudinary/index");
+const console = require("console");
+
+const upload = multer({ storage });
+
 
 
 
@@ -35,7 +50,7 @@ const sessionOptions = {
 app.use(session(sessionOptions));
 app.use(flash())
 
-const MongoDBStore = require("connect-mongo")
+
 
 mongoose.connect("mongodb://localhost:27017/room", {
   useNewUrlParser: true,
@@ -52,7 +67,7 @@ db.once("open", () => {
 
 
 app.get('/', (req, res) => {
-  res.send('hi')
+  res.send('Yes it is going well')
 })
 
 app.get('/registeraroom',async (req, res) => {
