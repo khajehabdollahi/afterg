@@ -64,9 +64,37 @@ db.once("open", () => {
   console.log("Database connected");
 });
 
+// const store = MongoDBStore.create({
+//   mongoUrl: dbUrl,
+//   touchAfter: 24 * 60 * 60,
+//   crypto: {
+//     secret: "squirrel",
+//   },
+// });
+
+// store.on("error", function (e) {
+//   console.log("Error to save to dataBase", e);
+// });
+
+
+const secret = process.env.SECRET || "thisshouldbeabettersecret!";
+
+const sessionConfig = {
+  // store,
+  secret,
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  },
+};
+app.use(session(sessionConfig));
+app.use(flash());
 
 app.get("/", (req, res) => {
-  res.send("Yes it is going well");
+  res.send("Yes it is going well very well");
 });
 
 app.get("/registeraroom", async (req, res) => {
