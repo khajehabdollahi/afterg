@@ -54,7 +54,7 @@ db.once("open", () => {
 
 
 app.get('/', (req, res) => {
-  res.render('home')
+  res.send('hi')
 })
 
 app.get('/registeraroom',async (req, res) => {
