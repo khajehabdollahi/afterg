@@ -80,7 +80,7 @@ store.on("error", function (e) {
 const secret = process.env.SECRET || "thisshouldbeabettersecret!";
 
 const sessionConfig = {
-  // store,
+  store,
   secret,
   resave: false,
   saveUninitialized: true,
