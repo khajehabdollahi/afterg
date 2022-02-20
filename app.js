@@ -947,7 +947,7 @@ app.get("/logout", (req, res) => {
 app.use((req, res) => {
   res.status(404).send(`<h1>The page is not defined</h1>`);
 });
-const port = process.env.PORT 
-app.listen(port, () => {
-  console.log(`School SERVER RUNNING! on ${port}`);
+const PORT = process.env.PORT || 50;
+app.listen(PORT, () => {
+  console.log(`School SERVER RUNNING! on ${PORT}`);
 });
