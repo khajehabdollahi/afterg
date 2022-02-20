@@ -166,10 +166,10 @@ app.post("/news", upload.single("image"), async (req, res) => {
   await school.save();
 
   res.redirect("/");
-});
-app.get("/", (req, res) => {
-  res.render("home")
-})
+ });
+// app.get("/", (req, res) => {
+//   res.render("home")
+// })
 
 app.put("/news/:id", upload.single("image"), async (req, res) => {
   const { id } = req.params;
