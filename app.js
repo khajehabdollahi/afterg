@@ -409,9 +409,9 @@ app.put("/schoolimagedelete/:id", async (req, res) => {
   res.render("home");
 });
 
-// app.get("/", (req, res) => {
-//   res.render("home");
-// });
+app.get("/", (req, res) => {
+  res.render("home");
+});
 
 
 
@@ -947,7 +947,7 @@ app.get("/logout", (req, res) => {
 app.use((req, res) => {
   res.status(404).send(`<h1>The page is not defined</h1>`);
 });
-const port = process.env.PORT || 3000;
+const port = process.env.PORT 
 app.listen(port, () => {
   console.log(`School SERVER RUNNING! on ${port}`);
 });
