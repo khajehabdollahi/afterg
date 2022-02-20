@@ -409,9 +409,9 @@ app.put("/schoolimagedelete/:id", async (req, res) => {
   res.render("home");
 });
 
-app.get("/", (req, res) => {
-  res.render("home");
-});
+// app.get("/", (req, res) => {
+//   res.render("home");
+// });
 
 
 
