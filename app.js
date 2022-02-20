@@ -168,7 +168,7 @@ app.post("/news", upload.single("image"), async (req, res) => {
   res.redirect("/");
 });
 app.get("/", (req, res) => {
-  res.render(home)
+  res.render("home")
 })
 
 app.put("/news/:id", upload.single("image"), async (req, res) => {
