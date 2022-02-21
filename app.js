@@ -48,9 +48,10 @@ app.use(flash());
 const dbUrl ="mongodb+srv://Hassan:admin@school.e6891.mongodb.net/schoolfriend?retryWrites=true&w=majority";
 
 mongoose.connect(dbUrl, {
-  useNewUrlParser: true,
-  // useCreateIndex:true,
   useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: false
 });
 
 const db = mongoose.connection;
@@ -70,7 +71,6 @@ const store = MongoDBStore.create({
 store.on("error", function (e) {
   console.log("Error to save to dataBase", e);
 });
-
 
 const secret = process.env.SECRET || "thisshouldbeabettersecret!";
 
