@@ -483,7 +483,7 @@ app.post("/register", async (req, res) => {
 //       id
 //   ); //Detta lokal host ska ändras till domänen
 //   res.render("registerSuccess", { newUser });
-// });
+ });
 
 app.get("/activate/:id", async (req, res) => {
   let user = await User.findOne({ _id: req.params.id });
