@@ -482,7 +482,7 @@ app.post("/register", async (req, res) => {
 //     "Yes you are very welcome now \n please activate ur account by clicking this link\n \n http://localhost:3000/activate/" +
 //       id
 //   ); //Detta lokal host ska ändras till domänen
-//   res.render("registerSuccess", { newUser });
+  res.render("registerSuccess", { newUser });
  });
 
 app.get("/activate/:id", async (req, res) => {
