@@ -899,7 +899,8 @@ app.post("/search/mobilenumber", async (req, res) => {
 });
 
 app.get("/search/economylevel", (req, res) => {
-  res.render("searchel");
+ 
+  res.render("searchEL");
 });
 
 app.post("/search/economylevel", async (req, res) => {
