@@ -31,10 +31,6 @@ const { storage } = require("./cloudinary/index");
 const console = require("console");
 
 const upload = multer({ storage });
-
-
-
-const Room = require("./models/room");
 const app = express();
 
 app.set("view engine", "ejs");
