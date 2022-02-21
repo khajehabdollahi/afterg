@@ -475,15 +475,15 @@ app.post("/register", async (req, res) => {
     await User.register(newUser, password);
   }
 
-  let { id } = await User.findOne({ username: username });
-  mailer(
-    username,
-    "Welcome to web",
-    "Yes you are very welcome now \n please activate ur account by clicking this link\n \n http://localhost:3000/activate/" +
-      id
-  ); //Detta lokal host ska ändras till domänen
-  res.render("registerSuccess", { newUser });
-});
+//   let { id } = await User.findOne({ username: username });
+//   mailer(
+//     username,
+//     "Welcome to web",
+//     "Yes you are very welcome now \n please activate ur account by clicking this link\n \n http://localhost:3000/activate/" +
+//       id
+//   ); //Detta lokal host ska ändras till domänen
+//   res.render("registerSuccess", { newUser });
+// });
 
 app.get("/activate/:id", async (req, res) => {
   let user = await User.findOne({ _id: req.params.id });
