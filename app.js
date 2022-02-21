@@ -11,6 +11,8 @@ const mailer = require("./views/mailer");
 const mailerForget = require("./views/mailerForget");
 
 const Friendship = require("./models/friendship");
+const Confirm = require("./models/confirm");
+
 
 const ejsMate = require("ejs-mate");
 const methodOverride = require("method-override");
