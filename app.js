@@ -475,7 +475,7 @@ app.post("/register", async (req, res) => {
     await User.register(newUser, password);
   }
 
-  // let { id } = await User.findOne({ username: username });
+  let { id } = await User.findOne({ username: username });
   // mailer(
   //   username,
   //   "Welcome to web",
