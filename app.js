@@ -146,7 +146,6 @@ app.get("/newones", requiredLogin, async (req, res) => {
 });
 
 app.post("/news", upload.single("image"), async (req, res) => {
-  // console.log(req.schoolody, req.file)
   const input = req.body;
   const school = new Newschool(input);
   school.schoolsname = req.body.schoolsname.toLowerCase();
