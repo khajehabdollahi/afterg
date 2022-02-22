@@ -150,6 +150,7 @@ app.post("/news", upload.single("image"), async (req, res) => {
   const input = req.body;
   const school = new Newschool(input);
   school.schoolsname = req.body.schoolsname.toLowerCase();
+  school.gender=req.body.gender
   school.city = req.body.city.toLowerCase();
   school.provience = req.body.provience.toLowerCase();
   school.district = req.body.district.toLowerCase();
