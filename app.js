@@ -46,12 +46,12 @@ const sessionOptions = {
 app.use(session(sessionOptions));
 app.use(flash());
 
-//const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/school";
+
 const dbUrl ="mongodb+srv://Hassan:admin@school.e6891.mongodb.net/schoolfriend?retryWrites=true&w=majority";
 
 mongoose.connect(dbUrl, {
   useNewUrlParser: true,
-  // useCreateIndex:true,
+  useCreateIndex:true,
   useUnifiedTopology: true,
 });
 
