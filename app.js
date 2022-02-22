@@ -51,7 +51,7 @@ const dbUrl ="mongodb+srv://Hassan:admin@school.e6891.mongodb.net/schoolfriend?r
 
 mongoose.connect(dbUrl, {
   useNewUrlParser: true,
-  useCreateIndex:true,
+  // useCreateIndex:true,
   useUnifiedTopology: true,
 });
 
