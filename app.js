@@ -118,8 +118,6 @@ app.use((req, res, next) => {
 });
 
 
-
-
 const requiredLogin = (req, res, next) => {
   if (!req.user) {
     return res.redirect("/login");
@@ -245,10 +243,7 @@ app.get("/deleteconfirm/:id", async (req, res) => {
 app.delete("/deleteschool/:id", async (req, res) => {
   const { id } = req.params;
 
-  //  await Friendship.findAndDelete({ schoolId: id });
-  //  await Friendship.findAndDelete({
-  //    friendshipRequesterSchoolId: id,
-  //  });
+  
 
   await Newschool.findByIdAndDelete(id);
   //  req.flash("mes", "Yes deleted a backery");
