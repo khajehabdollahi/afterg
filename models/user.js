@@ -11,13 +11,13 @@ let userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
- 
+  schoolPhoneNumber:{
+   type: Number,
+ },
   activated: {
     type: Boolean
   },
-  backries:{
-    type: Array,
-  }
+  
 });
 
 userSchema.plugin(passportLocalMongoose);
