@@ -51,7 +51,7 @@ const dbUrl ="mongodb+srv://Hassan:admin@school.e6891.mongodb.net/schoolfriend?r
 
 mongoose.connect(dbUrl, {
   useNewUrlParser: true,
-  // useCreateIndex:true,
+  useCreateIndex:true,
   useUnifiedTopology: true,
 });
 
@@ -63,7 +63,7 @@ db.once("open", () => {
 
 const store = MongoDBStore.create({
   mongoUrl: dbUrl,
-  touchAfter: 24 * 60 * 60,
+  touchAfter: 24 * 60 *60,
   crypto: {
     secret: "squirrel",
   },
@@ -628,14 +628,14 @@ app.post("/dialogue", requiredLogin, async (req, res) => {
   text.author.name = auth.name;
   text.author.id = auth.id;
   text.save();
-  const allText = await Text.find({});
+  allText = await Text.find({});
   res.redirect("/alldialogues");
 });
 
 app.get("/alldialogues", requiredLogin, async (req, res) => {
   const id = req.user.id;
 
-  const allText = await Text.find({});
+   allText = await Text.find({});
   res.render("dialogue", { allText, id });
 });
 app.get("/text/:id", async (req, res) => {
