@@ -471,12 +471,12 @@ app.post("/register", async (req, res) => {
   }
 
   let { id } = await User.findOne({ username: username });
-  // mailer(
-  //   username,
-  //   "Welcome to web",
-  //   "Yes you are very welcome now \n please activate ur account by clicking this link\n \n http://localhost:3000/activate/" +
-  //     id
-  // ); //Detta lokal host ska ändras till domänen
+  mailer(
+    username,
+    "Welcome to web",
+    "Yes you are very welcome now \n please activate ur account by clicking this link\n \n http://localhost:3000/activate/" +
+      id
+  ); //Detta lokal host ska ändras till domänen
   res.render("registerSuccess", { newUser });
  });
 
@@ -558,10 +558,10 @@ app.post("/login", async (req, res, next) => {
   })(req, res, next);
 });
 
-// app.get("/forgetpass", (req, res) => {
-//   let tempid = uuid.v4();
-//   res.render("foreget", { tempid });
-// });
+app.get("/forgetpass", (req, res) => {
+  let tempid = uuid.v4();
+  res.render("foreget", { tempid });
+});
 
 app.post("/forgetpass/:tempid", async (req, res) => {
   const { tempid } = await req.params;
