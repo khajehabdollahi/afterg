@@ -558,10 +558,10 @@ app.post("/login", async (req, res, next) => {
   })(req, res, next);
 });
 
-app.get("/forgetpass", (req, res) => {
-  let tempid = uuid.v4();
-  res.render("foreget", { tempid });
-});
+// app.get("/forgetpass", (req, res) => {
+//   let tempid = uuid.v4();
+//   res.render("foreget", { tempid });
+// });
 
 app.post("/forgetpass/:tempid", async (req, res) => {
   const { tempid } = await req.params;
