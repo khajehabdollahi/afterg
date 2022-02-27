@@ -51,7 +51,7 @@ const dbUrl ="mongodb+srv://Hassan:admin@school.e6891.mongodb.net/schoolfriend?r
 
 mongoose.connect(dbUrl, {
   useNewUrlParser: true,
-  useCreateIndex:true,
+  // useCreateIndex:true,
   useUnifiedTopology: true,
 });
 
@@ -63,7 +63,7 @@ db.once("open", () => {
 
 const store = MongoDBStore.create({
   mongoUrl: dbUrl,
-  touchAfter: 24 * 60 *60,
+  touchAfter: 24 * 60 * 60,
   crypto: {
     secret: "squirrel",
   },
@@ -471,12 +471,12 @@ app.post("/register", async (req, res) => {
   }
 
   let { id } = await User.findOne({ username: username });
-  mailer(
-    username,
-    "Welcome to web",
-    "Yes you are very welcome now \n please activate ur account by clicking this link\n \n http://localhost:3000/activate/" +
-      id
-  ); //Detta lokal host ska ändras till domänen
+  // mailer(
+  //   username,
+  //   "Welcome to web",
+  //   "Yes you are very welcome now \n please activate ur account by clicking this link\n \n http://localhost:3000/activate/" +
+  //     id
+  // ); //Detta lokal host ska ändras till domänen
   res.render("registerSuccess", { newUser });
  });
 
@@ -558,10 +558,10 @@ app.post("/login", async (req, res, next) => {
   })(req, res, next);
 });
 
-app.get("/forgetpass", (req, res) => {
-  let tempid = uuid.v4();
-  res.render("foreget", { tempid });
-});
+// app.get("/forgetpass", (req, res) => {
+//   let tempid = uuid.v4();
+//   res.render("foreget", { tempid });
+// });
 
 app.post("/forgetpass/:tempid", async (req, res) => {
   const { tempid } = await req.params;
@@ -628,14 +628,14 @@ app.post("/dialogue", requiredLogin, async (req, res) => {
   text.author.name = auth.name;
   text.author.id = auth.id;
   text.save();
-  allText = await Text.find({});
+  const allText = await Text.find({});
   res.redirect("/alldialogues");
 });
 
 app.get("/alldialogues", requiredLogin, async (req, res) => {
   const id = req.user.id;
 
-   allText = await Text.find({});
+  const allText = await Text.find({});
   res.render("dialogue", { allText, id });
 });
 app.get("/text/:id", async (req, res) => {
