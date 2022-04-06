@@ -247,6 +247,7 @@ app.delete("/deleteschool/:id", async (req, res) => {
 
   await Newschool.findByIdAndDelete(id);
   //  req.flash("mes", "Yes deleted a backery");
+  console.log('yes')
   res.redirect("/");
 });
 
