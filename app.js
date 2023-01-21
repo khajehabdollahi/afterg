@@ -13,7 +13,6 @@ const mailerForget = require("./views/mailerForget");
 const Friendship = require("./models/friendship");
 const Confirm = require("./models/confirm");
 
-
 const ejsMate = require("ejs-mate");
 const methodOverride = require("method-override");
 const passport = require("passport");
@@ -46,8 +45,8 @@ const sessionOptions = {
 app.use(session(sessionOptions));
 app.use(flash());
 
-
-const dbUrl ="mongodb+srv://Hassan:admin@school.e6891.mongodb.net/schoolfriend?retryWrites=true&w=majority";
+const dbUrl =
+  "mongodb+srv://Hassan:admin@school.e6891.mongodb.net/schoolfriend?retryWrites=true&w=majority";
 
 mongoose.connect(dbUrl, {
   useNewUrlParser: true,
@@ -80,11 +79,12 @@ const sessionConfig = {
   secret,
   resave: false,
   saveUninitialized: true,
-  cookie: {
-    httpOnly: true,
-    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-  },
+  // cookie: {
+  //   httpOnly: true,
+  //   expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+
+  //   maxAge: 1000 * 60 * 60 * 24 * 7,
+  // },
 };
 app.use(session(sessionConfig));
 app.use(flash());
@@ -117,7 +117,6 @@ app.use((req, res, next) => {
   next();
 });
 
-
 const requiredLogin = (req, res, next) => {
   if (!req.user) {
     return res.redirect("/login");
@@ -147,7 +146,7 @@ app.post("/news", upload.single("image"), async (req, res) => {
   const input = req.body;
   const school = new Newschool(input);
   school.schoolsname = req.body.schoolsname.toLowerCase();
-  school.gender=req.body.gender
+  school.gender = req.body.gender;
   school.city = req.body.city.toLowerCase();
   school.provience = req.body.provience.toLowerCase();
   school.district = req.body.district.toLowerCase();
@@ -160,8 +159,7 @@ app.post("/news", upload.single("image"), async (req, res) => {
   await school.save();
 
   res.redirect("/");
- });
-
+});
 
 app.put("/news/:id", upload.single("image"), async (req, res) => {
   const { id } = req.params;
@@ -190,7 +188,7 @@ app.get("/news/:id", async (req, res) => {
   // Finding users who sent friendship to
   const uId = friendships.friendrequesterId;
   //finding all friendsships
-  const allFriendships = await Friendship.find({});
+  let allFriendships = await Friendship.find({});
 
   let friendRequesterID = undefined;
   for (let f of allFriendships) {
@@ -223,11 +221,6 @@ app.get("/news/:id/edit", requiredLogin, async (req, res) => {
   res.render("edit", { school });
 });
 
-
-
-
-
-
 app.get("/news/:id/addimage", requiredLogin, async (req, res) => {
   const { id } = req.params;
   const school = await Newschool.findById(id);
@@ -242,8 +235,6 @@ app.get("/deleteconfirm/:id", async (req, res) => {
 
 app.delete("/deleteschool/:id", async (req, res) => {
   const { id } = req.params;
-
-  
 
   await Newschool.findByIdAndDelete(id);
   //  req.flash("mes", "Yes deleted a backery");
@@ -296,90 +287,193 @@ app.get("/news/:sid/:cuid", async (req, res) => {
   //finding the school
   const school = await Newschool.findById(sid);
 
+  //Finding current User
+  const currentUser = await User.findById(cuid);
+
+  // Finding all friendships
+  const  allFriendships = await Friendship.find({});
+  //Finding the School which is created by Current User
+  const schoolFriend = await Newschool.findOne({ "creator.id": cuid });
+  // the id of the school which is created by tis user
+  const sfId = schoolFriend.id;
+
+  let youAreAlreadyFriends = "No";
+  let ifYouAreAlreadyFriends = "No";
+  let isFriendshipRequestSent = "No";
+  let haveYoureceivedFriendRequsestFromThisSchool = "No";
+
+  /// *****************
+  // const requstedSchoolIds = await school.frienship;
+
+  // for (let i = 0; i < requstedSchoolIds.length; i++) {
+  //   if (requstedSchoolIds[i] == schoolFriend.id) {
+  //     let isFriendshipRequestSent = "yes";
+
+  //       }
+
+  // }
+  /// ****************
+
+  // Fiding the school Ids who sent friendship request to this school
   const schoolCretorId = school.creator.id;
   const schoolCreatorUser = await User.findById(schoolCretorId);
 
   // Finding if there is a friendship which is sent  to this school
-  const recivedFriendship = await Friendship.find({ schoolId: sid });
+  let recivedFriendship = await Friendship.find({ schoolId: sid });
+  let sentFriendship = await Friendship.find({
+    friendshipRequesterSchoolId: sfId,
+  });
+  //received Friendship From ThisSchool
+  let rFTS = await Friendship.find({
+    schoolId: sid,
+    friendshipRequesterSchoolId: sid,
+  });
+ 
+  ///******************** */
+  if (rFTS) {
+  
+    if (rFTS.confirmation == "Waiting for confirmation") {
+      haveYoureceivedFriendRequsestFromThisSchool = "Yes";
+      
+    }
+    ///////////////////****************** */
+    // else {
+    //   youAreAlreadyFriends = "Yes";
+    //   res.send(youAreAlreadyFriends);
+    // }
+  }
+
+  // if (recivedFriendship) {
+  //   console.log("recivedFriendship: ", recivedFriendship);
+  //   // console.log("recivedFriendship waiting to be confirmed");
+  //   if (recivedFriendship.confirmation == "Waiting for confirmation") {
+  //     console.log('This is waiting for confirmation',recivedFriendship);
+  //   }
+  //     // console.log("recivedFriendship  and confirmed");
+  //   // res.send('you have already sent friendship to this school')
+  // }
+  // if (sentFriendship) {
+  //     console.log("sentFriendship", sentFriendship);
+  //   }
+
+  // for (friend of recivedFriendship) {
+  //   if (friend.confirmation == "Yes") {
+  //     console.log("you are already friends", friend);
+  //   } else {
+  //     console.log("Friendship received  wait for confirmation", friend);
+  //   }
+  // }
+
+  for (friend of sentFriendship) {
+    if (
+      friend.confirmation == "Waiting for confirmation" &&
+      friend.schoolId == sid
+    ) {
+      isFriendshipRequestSent = "Yes";
+    }
+  }
+  for (friend of sentFriendship) {
+    if (friend.confirmation == "Yes" && friend.schoolId == sid) {
+      youAreAlreadyFriends = "Yes";
+    }
+  }
+
+  for (friend of allFriendships) {
+    if (
+      friend.friendshipRequesterSchoolId ==sid &&
+      friend.schoolId == sfId &&
+      friend.confirmation == "Waiting for confirmation"
+    ) {
+      haveYoureceivedFriendRequsestFromThisSchool ="Yes";
+    } 
+  }
+
+    for (friend of allFriendships) {
+      if (
+        friend.friendshipRequesterSchoolId == sid &&
+        friend.schoolId == sfId &&
+        friend.confirmation == "Yes"
+      ) {
+        youAreAlreadyFriends = "Yes";
+      }
+    }
+
+  
+
 
   //finding the user who created this schoolId
   // const schoolCreatorUser = await User.findById({ "school.creator.id": sid });
   // res.send(schoolCreatorUser)
   const user = school.creator;
   const schoolCreatorId = user.id;
+  // res.send(schoolCreatorId);
 
   const friendshipReqestSent = await Friendship.find({
-    friendrequesterid: schoolCreatorId,
+    friendshipRequesterSchoolId: schoolCreatorId,
   });
 
-  //Finding the School which is created by Current User
-  const schoolFriend = await Newschool.findOne({ "creator.id": cuid });
-
   //Finding friendships which is sent to current user
-  const friendships = await Friendship.find({ schoolId: schoolFriend.id });
+  const friendships = await Friendship.find({ schoolId: sfId });
 
-  //finding all friendships
-  const allFriendships = await Friendship.find({});
-  let youAreAlreadyFriends = undefined;
-  let ifYouAreAlreadyFriends = "No";
-  let isFriendshipRequestSent = undefined;
-  for (let friend of allFriendships) {
-    if (friend.schoolId == sid && friend.friendrequesterid == cuid) {
-      isFriendshipRequestSent = "Yes";
-      if (friend.confirmation == "Yes") {
-        ifYouAreAlreadyFriends = "Yes";
-        break;
-      }
-    }
-  }
+  // for (let friend of allFriendships) {
+  //   if (friend.schoolId == sid && friend.friendshipRequesterSchoolId == cuid) {
+  //     isFriendshipRequestSent = "Yes";
+  //     if (friend.confirmation == "Yes") {
+  //       ifYouAreAlreadyFriends = "Yes";
+  //       break;
+  //     }
+  //   }
+  // }
 
   let youHaveAlreadySentFrienshipRequest = undefined;
   let haveYoureceivedFriendRequsestFromThisSchoolNotConfirmed = "No";
 
   let shFriendship = school.frienship;
 
-  let haveYoureceivedFriendRequsestFromThisSchool = undefined;
-
-  for (let friend of allFriendships) {
-    if (
-      friend.friendrequesterid == schoolCretorId &&
-      friend.schoolId === schoolFriend.id &&
-      friend.confirmation == "Yes"
-    ) {
-      haveYoureceivedFriendRequsestFromThisSchool = "Yes";
-    }
-  }
+  // for (let friend of allFriendships) {
+  //   if (
+  //     friend.friendshipRequesterSchoolId == schoolCretorId &&
+  //     friend.schoolId === schoolFriend.id &&
+  //     friend.confirmation == "Yes"
+  //   ) {
+  //     haveYoureceivedFriendRequsestFromThisSchool = "Yes";
+  //   }
+  // }
 
   let areYouAlreadyFriend = "No";
-  for (let friend of allFriendships) {
-    if (
-      friend.friendrequesterid === sid &&
-      friend.schoolId === schoolFriend.id &&
-      friend.confirmation == "Yes"
-    ) {
-      areYouAlreadyFriend = "Yes";
-    }
-  }
+  // for (let friend of allFriendships) {
+  //   if (
+  //     friend.friendshipRequesterSchoolId === sid &&
+  //     friend.schoolId === schoolFriend.id &&
+  //     friend.confirmation == "Yes"
+  //   ) {
+  //     areYouAlreadyFriend = "Yes";
+  //   }
+  // }
 
-  for (let friend of allFriendships) {
-    if (
-      friend.userIdWhichReceivedFriendshipRequest == cuid &&
-      friend.friendshipRequesterSchoolId == sid &&
-      friend.confirmation == "Waiting for confirmation"
-    ) {
-      haveYoureceivedFriendRequsestFromThisSchoolNotConfirmed = "Yes";
-    }
-  }
+  // for (let friend of allFriendships) {
+  //   if (
+  //     friend.userIdWhichReceivedFriendshipRequest == cuid &&
+  //     friend.friendshipRequesterSchoolId == sid &&
+  //     friend.confirmation == "Waiting for confirmation"
+  //   ) {
+  //     haveYoureceivedFriendRequsestFromThisSchoolNotConfirmed = "Yes";
+  //   }
+  // }
 
   res.render("schoolNewDetail", {
     school,
+    sfId,
+    sid,
+    schoolFriend,
     friendships,
     recivedFriendship,
     friendshipReqestSent,
+    sentFriendship,
     allFriendships,
     isFriendshipRequestSent,
     areYouAlreadyFriend,
-    youHaveAlreadySentFrienshipRequest,
+    // youHaveAlreadySentFrienshipRequest,
     youAreAlreadyFriends,
     ifYouAreAlreadyFriends,
     haveYoureceivedFriendRequsestFromThisSchool,
@@ -401,8 +495,6 @@ app.put("/schoolimagedelete/:id", async (req, res) => {
 app.get("/", (req, res) => {
   res.render("home");
 });
-
-
 
 app.get("/userconfirm/:uid/:sid", async (req, res) => {
   const { uid } = req.params;
@@ -478,7 +570,7 @@ app.post("/register", async (req, res) => {
   //     id
   // ); //Detta lokal host ska ändras till domänen
   res.render("registerSuccess", { newUser });
- });
+});
 
 app.get("/activate/:id", async (req, res) => {
   let user = await User.findOne({ _id: req.params.id });
@@ -521,7 +613,7 @@ app.get("/deleteuserconfirm/:id", async (req, res) => {
   await Newschool.findOneAndDelete({ "creator.id": id });
 
   await Friendship.deleteMany({
-    friendrequesterid: id,
+    friendshipRequesterSchoolId: id,
   });
   await Friendship.deleteMany({
     userIdWhichReceivedFriendshipRequest: id,
@@ -725,29 +817,42 @@ app.get("/requestfriendship/:id", requiredLogin, async (req, res) => {
   const { id } = req.params;
   const currentUserId = req.user.id;
   const school = await Newschool.findById(id);
+  // res.send(currentUserId)
   res.render("friendship", { id, school });
 });
 
 app.post("/friend/:id", async (req, res) => {
   const friended = new Friendship(req.body);
   const id = req.params.id;
+  friended.schoolId = id
+  
   //finding the school which receive friendship request
   const school = await Newschool.findById(id);
-  const uId = req.body.friendrequesterid;
+  const uId = req.user.id;
+  // const uId = req.body.friendshipRequesterSchoolId;
 
   //finding the school which send friendship
   const fschool = await Newschool.findOne({ "creator.id": uId });
 
-  const friendshipRequesterSchoolId = fschool.id;
-  const userIdWhichReceivedFriendshipRequest = school.creator.id;
+  
+
+  // const friendshipRequesterSchoolId = fschool.id;
+  // const userIdWhichReceivedFriendshipRequest = school.creator.id;
+
+  
 
   // let newfriend = school.frienship;
-  friended.friendshipRequestersSchoolsName = fschool.schoolsname;
-  friended.userIdWhichReceivedFriendshipRequest =
-    userIdWhichReceivedFriendshipRequest;
+  friended.friendrequestersname = fschool.schoolsname;
+  // The name of the school whic friendship is sent to
+  friended.friendrequesteedtoname = school.schoolsname;
+
+
+  // friended.userIdWhichReceivedFriendshipRequest =
+  //   userIdWhichReceivedFriendshipRequest;
   friended.friendshipRequesterSchoolId = fschool.id;
-  // friended.friendrequesterid = req.body.friendrequesterid;
-  school.frienship.push(friendshipRequesterSchoolId);
+  
+  // friended.friendshipRequesterSchoolId = req.body.friendshipRequesterSchoolId;
+  // school.frienship.push(friendrequesterSchoolId);
   const date = Date.now();
   friended.date = date.toString();
   school.save();
@@ -764,14 +869,16 @@ app.get("/users/:username", async (req, res) => {
 });
 
 app.get("/friendshipconfirm/:fid/:id", async (req, res) => {
+  //fid is the friendship ID
   const { fid } = req.params;
+  // The Id of the school which receives friendship request
   const { id } = req.params;
 
   const friendship = await Friendship.findById(fid);
+// finding the Id of the school which sent friendship request
+  const fsid = friendship.friendshipRequesterSchoolId;   
 
-  const uid = friendship.friendrequesterid;
-
-  const fschool = await Newschool.findOne({ "creator.id": uid });
+  const fschool = await Newschool.findById(fsid);
 
   const school = await Newschool.findById(id);
 
@@ -892,7 +999,6 @@ app.post("/search/mobilenumber", async (req, res) => {
 });
 
 app.get("/search/economylevel", (req, res) => {
- 
   res.render("searchEL");
 });
 
@@ -930,9 +1036,6 @@ app.get("/logout", (req, res) => {
   req.logout();
   res.redirect("/");
 });
-
-
-
 
 app.use((req, res) => {
   res.status(404).send(`<h1>The page is not defined</h1>`);
