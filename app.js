@@ -323,25 +323,10 @@ app.get("/news/:sid/:cuid", async (req, res) => {
   let sentFriendship = await Friendship.find({
     friendshipRequesterSchoolId: sfId,
   });
-  //received Friendship From ThisSchool
-  let rFTS = await Friendship.find({
-    schoolId: sid,
-    friendshipRequesterSchoolId: sid,
-  });
+
  
   ///******************** */
-  if (rFTS) {
   
-    if (rFTS.confirmation == "Waiting for confirmation") {
-      haveYoureceivedFriendRequsestFromThisSchool = "Yes";
-      
-    }
-    ///////////////////****************** */
-    // else {
-    //   youAreAlreadyFriends = "Yes";
-    //   res.send(youAreAlreadyFriends);
-    // }
-  }
 
   // if (recivedFriendship) {
   //   console.log("recivedFriendship: ", recivedFriendship);
