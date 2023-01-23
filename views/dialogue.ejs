@@ -1,15 +1,20 @@
 <% layout('layout/boilerplate') %> 
     
-<div class="container mt-1 home-block text-center">
-  <div class="row mt-3 d-flex justify-content-center">
-    <div class="col-lg-8 border rounded">
-      <img class="border rounded"
+<div class="container align-items-center text-align-center text-center">
+  <h4 class="home-header-text text-center m-4" id="text-header">Find A School To be your School's Friend </h4>
+  <div class="row mt-3 d-flex justify-content-center text-align-center">
+    <div class="col-lg-12 col-md-8 border rounded text-center">
+      <div class="row text-align-center">
+    
+    </div>
+      <img class="border rounded  " style=" padding: 3% 3%;"
       src="/public/images/friend.jpg"
     />
     </div>
   </div>
+  <div>
   <% for(let t of allText.reverse()){ %>
-    <div class="row d-flex justify-content-center mt-2">
+    <div class="row d-flex justify-content-center mt-2" style=" padding: 1% 1%;">
       <div class="col-lg-8 px-3 border rounded blog-text pt-2">
         <h4><a href="/text/<%=t.id %>"><%=t.title %></a></h4>
         <p class="text-center text-justify"><%=t.text.substring(1, 250) %></p>
@@ -21,11 +26,12 @@
             </form>
           </div> <br>
         <% }else{ %> 
-        <p class="mt-1" style="font-size: 12px;">Written By: <a href="/users/<%=t.author.id %> "><span><%=t.author.name %></span></a></p>
+        <p class="mt-1" style="font-size: 18px;">Written By: <a href="/users/<%=t.author.id %> "><span><%=t.author.name %></span></a></p>
       <% } %> 
       </div>
       </div>
     <% } %>
+    </div>
   </div>
 </div>
  

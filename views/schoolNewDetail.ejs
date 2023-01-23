@@ -323,7 +323,8 @@
 
     <% for (friend of allFriendships){ %> 
     <% if ((friend.schoolId===sfId &&friend.friendshipRequesterSchoolId==sid) && (friend.confirmation=="Waiting for confirmation") ){ %> 
-   <h2>   You have received friendshio request from this school</h2>
+   <h3>   You have received friendshio request from this school</h3>
+    <a href="http:/friendshipconfirm/<%= friend.id%>/<%=friend.schoolId %>   "> Confirm friendship request</a> <br> 
       <% } %> 
       <% } %> 
 

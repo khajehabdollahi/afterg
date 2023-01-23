@@ -477,8 +477,10 @@ app.put("/schoolimagedelete/:id", async (req, res) => {
   res.render("home");
 });
 
-app.get("/", (req, res) => {
-  res.render("home");
+app.get("/", async (req, res) => {
+  const id = req.user.id;
+  const allText = await Text.find({});
+  res.render("dialogue", { allText, id });
 });
 
 app.get("/userconfirm/:uid/:sid", async (req, res) => {
