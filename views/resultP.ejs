@@ -1,26 +1,28 @@
  <% layout('layout/boilerplate') %> 
 
 <div class="d-flex justify-content-center">
-<main class="card col-8"; style="text-align:center">
+<main class="card col-lg-5"; style="text-align:center">
 
 <h2>Here is the result:</h2>
 
+<% if (school) {%> 
  <ul>
     <% for(let sch of school) { %>
       <div class="card">
         <div class="row">
           <div class="col-md-12">
-
-           
             
  <a href="/news/<%= sch.id %>/<%=currentUser.id %> "><%= sch.schoolsname %></a>
 
           </div>
         </div>
       </div>
-   
-
-   <%} %>
+  
   </ul>
+  <%} %>
+  <% } else { %> 
+    <h2>No school was found</h2>
+    <% } %> 
+    
   </main>
   </div>
