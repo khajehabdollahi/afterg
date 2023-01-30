@@ -47,7 +47,7 @@ app.use(flash());
 
 const dbUrl =
   "mongodb+srv://Hassan:admin@school.e6891.mongodb.net/schoolfriend?retryWrites=true&w=majority";
-
+mongoose.set("strictQuery", true);
 mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   // useCreateIndex:true,
@@ -1020,9 +1020,11 @@ app.post("/api/login", async (req, res, next) => {
 });
 
 app.get("/logout", (req, res) => {
+  console.log("USER: ", req.user);
   req.logout();
   res.redirect("/");
 });
+
 
 app.use((req, res) => {
   res.status(404).send(`<h1>The page is not defined</h1>`);

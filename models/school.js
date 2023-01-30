@@ -51,6 +51,9 @@ const schoolSchema = new mongoose.Schema({
   location: {
     type: String,
   },
+  confirmation:{
+    type: Boolean,
+  },
   frienship: [
     {
       type: mongoose.Schema.Types.ObjectId,

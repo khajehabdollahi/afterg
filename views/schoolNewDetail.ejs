@@ -3,9 +3,9 @@
   <div class="row mt-3">
     
     <div class="col-lg-6">
-          <% if(currentUser.confirmation!="Yes" &&currentUser.id!=school.creator.id && schoolCreatorUser.confirmation!="Yes") {%> 
+         <% if(currentUser.confirmation!="Yes" &&currentUser.id!=school.creator.id && schoolCreatorUser.confirmation!="Yes") {%> 
       <a href="http:/userconfirm/<%=currentUser.id  %>/<%= school.creator.id%>  "> <h2 style="color:#ff0000"> Request confirmation to this school</h2></a>
-     <% } %> 
+     <% } %>  
       <ul class="list-group">
         <li class="list-group-item py-1"> 
           <div class="row">
