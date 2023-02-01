@@ -3,7 +3,7 @@
   <div class="row mt-3">
     <div class="col-lg-6">
             <% if(currentUser.confirmation!= "Yes"&& schoolCreatorUser.confirmation=="Yes") {%> 
-      <a href="http:/userconfirm/<%=currentUser.id  %>/<%= school.creator.id%>  "> <h2 style="color:#ff0000"> Request confirmation to this school</h2></a>
+      <a href="http:/userconfirm/<%=currentUser.id  %>/<%= school.creator.id %>"> <h2 style="color:#ff0000"> Request confirmation to this school</h2></a>
      <% } %> 
       
       <ul class="list-group">
@@ -180,10 +180,10 @@
 
     <div class="col-lg-6">
       <div class="school-image border rounded">
-        <img class="rounded" src=<%=school.image %> alt="School Image" width="100%"> 
+        <img class="rounded" src="<%= school.image %>" width="100%"> 
       </div>
            <% if(currentUser && currentUser.username ==school.creator.username ) { %> 
-        <form action="/schoolimagedelete/<%= school._id%>" method="get">
+        <form action="/schoolimagedelete/<%= school._id %>" method="get">
           <button class="btn btn-danger" type="submit">Delete image</button>
         </form>
       <% } %>

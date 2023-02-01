@@ -4,6 +4,9 @@
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
+const jwt = require('jsonwebtoken')
+var cookieParser = require('cookie-parser')
+
 const session = require("express-session");
 const flash = require("connect-flash");
 
@@ -37,17 +40,12 @@ const app = express();
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-const sessionOptions = {
-  secret: "secret",
-  resave: false,
-  saveUninitialized: false,
-};
 
-app.use(session(sessionOptions));
-app.use(flash());
 
 
 const dbUrl ="mongodb+srv://Hassan:admin@school.e6891.mongodb.net/schoolfriend?retryWrites=true&w=majority";
+
+// const dbUrl = "mongodb://localhost:27017/hassansecond"
 
 mongoose.connect(dbUrl, {
   useNewUrlParser: true,
@@ -78,10 +76,9 @@ const secret = process.env.SECRET || "thisshouldbeabettersecret!";
 const sessionConfig = {
   store,
   secret,
-  resave: false,
+  resave: true,
   saveUninitialized: true,
   cookie: {
-    httpOnly: true,
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   },
@@ -96,13 +93,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-app.use((req, res, next) => {
-  res.locals.currentUser = req.user;
-  res.locals.success = req.flash("success");
-  res.locals.error = req.flash("error");
 
-  next();
-});
 
 app.engine("ejs", ejsMate);
 app.set("views", path.join(__dirname, "views"));
@@ -112,18 +103,34 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use("/public", express.static("public"));
 
-app.use((req, res, next) => {
-  res.locals.currentUser = req.user;
-  next();
-});
 
 
-const requiredLogin = (req, res, next) => {
-  if (!req.user) {
-    return res.redirect("/login");
+
+app.use(cookieParser())
+
+Tokenauth = async (req ,res , next)=>{
+  try {
+    const token = req.cookies.jwt_Token
+    const verfiy =  jwt.verify(token , 'mysupersecret')
+    const verfified_user = await User.findById(verfiy._id)
+    req.user = verfified_user ;
+    res.locals.currentUser = verfified_user;
+
+   next()
+  } catch (error) {
+    console.log(error)
+    res.redirect('/login')
   }
-  next();
-};
+ } 
+
+
+ app.use( (req, res, next) => {
+  res.locals.currentUser = req.user
+  console.log(req.user)
+  next()
+})
+
+
 
 app.get("/secret", (req, res) => {
   if (!req.session.user_id) {
@@ -132,7 +139,7 @@ app.get("/secret", (req, res) => {
   res.render("secret");
 });
 
-app.get("/newones", requiredLogin, async (req, res) => {
+app.get("/newones", Tokenauth, async (req, res) => {
   const id = req.user.id;
   const school = await Newschool.findOne({ "creator.id": id });
 
@@ -143,7 +150,7 @@ app.get("/newones", requiredLogin, async (req, res) => {
   }
 });
 
-app.post("/news", upload.single("image"), async (req, res) => {
+app.post("/news", Tokenauth , upload.single("image"), async (req, res) => {
   const input = req.body;
   const school = new Newschool(input);
   school.schoolsname = req.body.schoolsname.toLowerCase();
@@ -159,20 +166,11 @@ app.post("/news", upload.single("image"), async (req, res) => {
 
   await school.save();
 
-  res.redirect("/");
+  res.redirect("/schools");
  });
 
 
-app.put("/news/:id", upload.single("image"), async (req, res) => {
-  const { id } = req.params;
-  const cuId = req.user.id;
-  const data = req.body;
 
-  school = await Newschool.findByIdAndUpdate(id, data);
-  school.image = req.file.path;
-  school.save();
-  res.redirect("/news/" + id + "/" + cuId);
-});
 
 app.get("/news/:id", async (req, res) => {
   const { id } = req.params;
@@ -216,7 +214,21 @@ app.get("/news/:id", async (req, res) => {
   });
 });
 
-app.get("/news/:id/edit", requiredLogin, async (req, res) => {
+
+
+app.put("/news/:id", upload.single("image"), async (req, res) => {
+  const { id } = req.params;
+  const cuId = req.user.id;
+  const data = req.body;
+
+  school = await Newschool.findByIdAndUpdate(id, data);
+  school.image = req.file.path;
+  school.save();
+  res.redirect("/news/" + id + "/" + cuId);
+});
+
+
+app.get("/news/:id/edit", Tokenauth, async (req, res) => {
   const { id } = req.params;
 
   const school = await Newschool.findById(id);
@@ -228,7 +240,7 @@ app.get("/news/:id/edit", requiredLogin, async (req, res) => {
 
 
 
-app.get("/news/:id/addimage", requiredLogin, async (req, res) => {
+app.get("/news/:id/addimage", Tokenauth, async (req, res) => {
   const { id } = req.params;
   const school = await Newschool.findById(id);
   res.render("addimage", { school });
@@ -250,7 +262,7 @@ app.delete("/deleteschool/:id", async (req, res) => {
   res.redirect("/");
 });
 
-app.get("/schools", requiredLogin, async (req, res) => {
+app.get("/schools", Tokenauth , async (req, res) => {
   const currentUserId = req.user.id;
   const currenUsersSchool = await Newschool.findOne({
     "creator.id": currentUserId,
@@ -270,7 +282,7 @@ app.get("/schools", requiredLogin, async (req, res) => {
       }
       return 0;
     });
-    res.render("allschools1", { schools, currentUserId, currenUsersSchool });
+  return res.render("allschools1", { schools, currentUserId, currenUsersSchool });
   }
   const schools = await Newschool.find({});
 
@@ -285,7 +297,7 @@ app.get("/schools", requiredLogin, async (req, res) => {
     }
     return 0;
   });
-  res.render("allschools", { schools, currentUserId });
+  return res.render("allschools", { schools, currentUserId });
 });
 
 app.get("/news/:sid/:cuid", async (req, res) => {
@@ -302,6 +314,10 @@ app.get("/news/:sid/:cuid", async (req, res) => {
   // Finding if there is a friendship which is sent  to this school
   const recivedFriendship = await Friendship.find({ schoolId: sid });
 
+let isFriendshipRequestSent = undefined;
+let haveYoureceivedFriendRequsestFromThisSchool="no"
+
+
   //finding the user who created this schoolId
   // const schoolCreatorUser = await User.findById({ "school.creator.id": sid });
   // res.send(schoolCreatorUser)
@@ -314,31 +330,54 @@ app.get("/news/:sid/:cuid", async (req, res) => {
 
   //Finding the School which is created by Current User
   const schoolFriend = await Newschool.findOne({ "creator.id": cuid });
+  // the id of the school which is created by this user
+  const sfId = schoolFriend.id;
 
   //Finding friendships which is sent to current user
   const friendships = await Friendship.find({ schoolId: schoolFriend.id });
+  let sentFriendship = await Friendship.find({
+    friendshipRequesterSchoolId: sfId,
+  });
+
+
+  
 
   //finding all friendships
   const allFriendships = await Friendship.find({});
   let youAreAlreadyFriends = undefined;
   let ifYouAreAlreadyFriends = "No";
-  let isFriendshipRequestSent = undefined;
+  
+    let youHaveAlreadySentFrienshipRequest = undefined;
+  let haveYoureceivedFriendRequsestFromThisSchoolNotConfirmed = "No";
+  
   for (let friend of allFriendships) {
-    if (friend.schoolId == sid && friend.friendrequesterid == cuid) {
+    if (
+      friend.schoolId == sid &&
+      friend.friendshipRequesterSchoolId == sfId
+    ) {
       isFriendshipRequestSent = "Yes";
       if (friend.confirmation == "Yes") {
-        ifYouAreAlreadyFriends = "Yes";
-        break;
+        youAreAlreadyFriends = "Yes";
+      }
+    }
+  }
+  for (let friend of allFriendships) {
+    if (
+      friend.schoolId == sfId &&
+      friend.friendshipRequesterSchoolId == sid
+    ) {
+     haveYoureceivedFriendRequsestFromThisSchool ="Yes";
+      if (friend.confirmation == "Yes") {
+        youAreAlreadyFriends = "Yes";
       }
     }
   }
 
-  let youHaveAlreadySentFrienshipRequest = undefined;
-  let haveYoureceivedFriendRequsestFromThisSchoolNotConfirmed = "No";
+
 
   let shFriendship = school.frienship;
 
-  let haveYoureceivedFriendRequsestFromThisSchool = undefined;
+ 
 
   for (let friend of allFriendships) {
     if (
@@ -363,15 +402,30 @@ app.get("/news/:sid/:cuid", async (req, res) => {
 
   for (let friend of allFriendships) {
     if (
-      friend.userIdWhichReceivedFriendshipRequest == cuid &&
+      friend.friendrequesteedtoname == schoolFriend.schoolsname &&
       friend.friendshipRequesterSchoolId == sid &&
       friend.confirmation == "Waiting for confirmation"
     ) {
       haveYoureceivedFriendRequsestFromThisSchoolNotConfirmed = "Yes";
     }
   }
+  // for (friend of sentFriendship) {
+  //   if (
+  //     friend.confirmation == "Waiting for confirmation" &&
+  //     friend.schoolId == sid
+  //   ) {
+  //     isFriendshipRequestSent = "Yes";
+  //   }
+  // }
+  // for (friend of sentFriendship) {
+  //   if (friend.confirmation == "Yes" && friend.schoolId == sid) {
+  //     youAreAlreadyFriends = "Yes";
+  //   }
+  // }
 
   res.render("schoolNewDetail", {
+    sfId,
+    sid,
     school,
     friendships,
     recivedFriendship,
@@ -383,10 +437,13 @@ app.get("/news/:sid/:cuid", async (req, res) => {
     youAreAlreadyFriends,
     ifYouAreAlreadyFriends,
     haveYoureceivedFriendRequsestFromThisSchool,
+    haveYoureceivedFriendRequsestFromThisSchool,
     haveYoureceivedFriendRequsestFromThisSchoolNotConfirmed,
     schoolCreatorUser,
+    sentFriendship,
   });
 });
+
 
 app.put("/schoolimagedelete/:id", async (req, res) => {
   const { id } = req.params;
@@ -450,7 +507,7 @@ app.post("/register", async (req, res) => {
   let inputPassword = req.body.password;
 
   if (!isValidData(inputPassword)) {
-    res.render("invalidpass");
+   return res.render("invalidpass");
   } else {
     password = inputPassword;
   }
@@ -468,6 +525,8 @@ app.post("/register", async (req, res) => {
     res.render("registererror", { err });
   } else {
     await User.register(newUser, password);
+    // const regtoken = await newUser.Authuser();
+
   }
 
   let { id } = await User.findOne({ username: username });
@@ -493,7 +552,7 @@ app.get("/activate/:id", async (req, res) => {
   }
 });
 
-app.get("/users/edit/:id", async (req, res) => {
+app.get("/users/edit/:id", Tokenauth,async (req, res) => {
   const { id } = req.params;
   const user = await User.findById(id);
   res.render("edituser", { user });
@@ -501,7 +560,7 @@ app.get("/users/edit/:id", async (req, res) => {
 
 app.put("/users/edit/:id", async (req, res) => {
   const { id } = await req.params;
-  console.log("id: ");
+  // console.log("id: ");
 
   const user = await User.findByIdAndUpdate(id, req.body, {
     runValidators: true,
@@ -535,24 +594,30 @@ app.get("/login", async (req, res) => {
   res.render("login");
 });
 
+
+
+
 app.post("/login", async (req, res, next) => {
-  await passport.authenticate("local", (err, user) => {
+  await passport.authenticate("local", async(err, user) => {
+  
     if (err) {
       return next(err);
     }
-
-    if (!user.username) {
-      const worngUser = req.body.username;
-      return res.render("wrongEmail", { worngUser });
-    }
+    
     if (!user) {
       const worngUser = req.body.username;
       return res.render("wrongpassword", { worngUser });
     }
-    req.logIn(user, function (err) {
+    if (!user.username) {
+      const worngUser = req.body.username;
+      return res.render("wrongEmail", { worngUser });
+    }
+    req.logIn(user, async function (err) {
       if (err) {
         return next(err);
       }
+      const Token = await user.Authuser()
+      res.cookie('jwt_Token' , Token )
       return res.redirect("/schools");
     });
   })(req, res, next);
@@ -597,14 +662,14 @@ app.get("/resetpass/:tempid/:username", async (req, res) => {
 
 app.put("/resetpass/:tempid/:username", async (req, res) => {
   const { username } = req.body;
-  console.log(username.substring(username.indexOf("/") + 1));
+  // console.log(username.substring(username.indexOf("/") + 1));
   const { password } = req.body;
 
   await User.findOne({ username }, (err, user) => {
     if (err) {
       res.send("Password reset Failed");
     } else {
-      console.log("USER:", user);
+      // console.log("USER:", user);
       user.setPassword(password, (error, returnedUser) => {
         if (error) {
           console.log(error);
@@ -617,11 +682,11 @@ app.put("/resetpass/:tempid/:username", async (req, res) => {
   });
 });
 
-app.get("/writenewtext", requiredLogin, (req, res) => {
+app.get("/writenewtext", Tokenauth, (req, res) => {
   res.render("text");
 });
 
-app.post("/dialogue", requiredLogin, async (req, res) => {
+app.post("/dialogue", Tokenauth, async (req, res) => {
   const text = new Text(req.body);
   const id = req.user.id;
   const auth = await User.findById(id);
@@ -632,7 +697,7 @@ app.post("/dialogue", requiredLogin, async (req, res) => {
   res.redirect("/alldialogues");
 });
 
-app.get("/alldialogues", requiredLogin, async (req, res) => {
+app.get("/alldialogues", Tokenauth, async (req, res) => {
   const id = req.user.id;
 
   const allText = await Text.find({});
@@ -670,12 +735,12 @@ app.put("/dialogue/:id", async (req, res) => {
   res.redirect("/alldialogues");
 });
 
-app.get("/users", async (req, res) => {
+app.get("/users",Tokenauth , async (req, res) => {
   const allUsers = await User.find({});
   res.render("allUsers", { allUsers });
 });
 
-app.get("/users/:id", async (req, res) => {
+app.get("/users/:id", Tokenauth ,  async (req, res) => {
   const { id } = req.params;
   const user = await User.findById(id);
 
@@ -721,16 +786,18 @@ app.put("/userconfirm/:id", async (req, res) => {
   res.redirect("/");
 });
 
-app.get("/requestfriendship/:id", requiredLogin, async (req, res) => {
+app.get("/requestfriendship/:id",  async (req, res) => {
   const { id } = req.params;
   const currentUserId = req.user.id;
   const school = await Newschool.findById(id);
+
   res.render("friendship", { id, school });
 });
 
 app.post("/friend/:id", async (req, res) => {
   const friended = new Friendship(req.body);
   const id = req.params.id;
+
   //finding the school which receive friendship request
   const school = await Newschool.findById(id);
   const uId = req.body.friendrequesterid;
@@ -742,11 +809,12 @@ app.post("/friend/:id", async (req, res) => {
   const userIdWhichReceivedFriendshipRequest = school.creator.id;
 
   // let newfriend = school.frienship;
-  friended.friendshipRequestersSchoolsName = fschool.schoolsname;
+  friended.friendrequestersname = fschool.schoolsname;
   friended.userIdWhichReceivedFriendshipRequest =
     userIdWhichReceivedFriendshipRequest;
   friended.friendshipRequesterSchoolId = fschool.id;
   // friended.friendrequesterid = req.body.friendrequesterid;
+  friended.friendrequesteedtoname = school.schoolsname;
   school.frienship.push(friendshipRequesterSchoolId);
   const date = Date.now();
   friended.date = date.toString();
@@ -757,7 +825,8 @@ app.post("/friend/:id", async (req, res) => {
   res.redirect("/news/" + id + "/" + uId);
 });
 
-app.get("/users/:username", async (req, res) => {
+
+app.get("/users/:username",Tokenauth ,async (req, res) => {
   const { username } = req.params;
   const user = await User.findById(username);
   res.render("showuser", { user });
@@ -769,13 +838,14 @@ app.get("/friendshipconfirm/:fid/:id", async (req, res) => {
 
   const friendship = await Friendship.findById(fid);
 
-  const uid = friendship.friendrequesterid;
+  const uid = friendship.friendrequesterId;
 
   const fschool = await Newschool.findOne({ "creator.id": uid });
 
   const school = await Newschool.findById(id);
+ 
 
-  res.render("friendshipconfirm", { friendship, school, fschool });
+  res.render("friendshipconfirm", {friendship, school, fschool });
 });
 
 app.put("/friendshipconfirm/:id", async (req, res) => {
@@ -790,12 +860,12 @@ app.put("/friendshipconfirm/:id", async (req, res) => {
   res.redirect("/schools");
 });
 
-app.get("/friendship", async (req, res) => {
+app.get("/friendship", Tokenauth , async (req, res) => {
   const friendship = await Friendship.find({});
   res.render("friendships", { friendship });
 });
 
-app.get("/users/:id/:uid/school", async (req, res) => {
+app.get("/users/:id/:uid/school",Tokenauth ,async (req, res) => {
   const { id } = req.params;
   const uid = req.params;
   const user = await User.findById(id);
@@ -804,7 +874,7 @@ app.get("/users/:id/:uid/school", async (req, res) => {
   res.render("school", { school });
 });
 
-app.get("/search", requiredLogin, (req, res) => {
+app.get("/search", Tokenauth, (req, res) => {
   res.render("search");
 });
 app.get("/search/schoolname", (req, res) => {
@@ -928,6 +998,7 @@ app.post("/api/login", async (req, res, next) => {
 
 app.get("/logout", (req, res) => {
   req.logout();
+  res.clearCookie('jwt_Token')
   res.redirect("/");
 });
 

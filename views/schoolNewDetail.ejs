@@ -3,9 +3,9 @@
   <div class="row mt-3">
     
     <div class="col-lg-6">
-          <% if(currentUser.confirmation!="Yes" &&currentUser.id!=school.creator.id && schoolCreatorUser.confirmation!="Yes") {%> 
+          <!-- <% if(currentUser.confirmation!="Yes" &&currentUser.id!=school.creator.id && schoolCreatorUser.confirmation!="Yes") {%> 
       <a href="http:/userconfirm/<%=currentUser.id  %>/<%= school.creator.id%>  "> <h2 style="color:#ff0000"> Request confirmation to this school</h2></a>
-     <% } %> 
+     <% } %>  -->
       <ul class="list-group">
         <li class="list-group-item py-1"> 
           <div class="row">
@@ -186,7 +186,7 @@
 
     <div class="col-lg-6">
       <div class="school-image border rounded">
-        <img class="rounded" src=<%=school.image %> alt="School Image" width="100%"> 
+        <img class="rounded" src="<%=school.image %>" alt="School Image" width="100%"> 
 
         
         <% if(currentUser && currentUser.id ==school.creator.id && currentUser.confirmation=="Yes") { %> 
@@ -214,96 +214,130 @@
 
 <hr/>
 
-
 <div class="d-flex justify-content-center">
 
   <div class="card col-6"; style="text-align:center">
       <br>
       <% if(!currentUser || currentUser.username !=school.creator.username ) { %> 
       <% } else {%> 
-        <a href="http:/news/<%=school.id %>/edit " style="background-color: rgb(8, 8, 6); color:white">Edit Information</a><br><br>
+        <a href="http:/news/<%=school.id %>/edit " class="badge badge-primary" style="padding:10px"  >Edit Information</a><br><br>
         <form action="/deleteconfirm/<%=school._id %>" method="get">
           <button class="btn btn-danger" type="submit">Delete your school</button>
         </form>
-      <% } %> <br>
+
+         <% } %> <br>
     <h4 class="text-uppercase">friends</h4>
-    <h6>Sent and confirmed</h6>
-  <% for (let friend of recivedFriendship) {%> 
+    <% for (let friend of sentFriendship) {%> 
+    <% if( friend.confirmation=="Yes") {%> 
+
+    <ul style="list-style: none;">
+        <li><a href="/news/<%=friend.friendshipRequesterSchoolId %>/<%=currentUser.id %>"><%=friend. friendrequesteedtoname%></a></li>  </ul>
+    <% } %> 
+    <% } %> 
+
+          <% for (let friend of recivedFriendship) {%> 
     <% if( friend.confirmation=="Yes") {%> 
       <ul style="list-style: none;">
-        <li><a href="/news/<%=friend.friendshipRequesterSchoolId %>/<%=currentUser.id %>"><%=friend.friendshipRequestersSchoolsName  %></a>  </li>  </ul>
+        <li><a href="/news/<%=friend.friendshipRequesterSchoolId %>/<%=currentUser.id %>"><%=friend.friendrequestersname %></a>  </li>  </ul>
     <% } %> 
     <% } %> 
-    <h6>Received to be confirmed</h6>
-<% for (let friend of recivedFriendship) {%> 
-    <% if( friend.confirmation!="Yes") {%> 
-       <% if( currentUser.username ==school.creator.username ) { %> 
-      
+<% if( currentUser.username ==school.creator.username ) { %> 
+        <h6>Received to be confirmed</h6>
+<% } %>
+
+<% for (let friend of allFriendships) {%> 
+   <% if(( currentUser.username ==school.creator.username )&& (friend.schoolId==sid) ) { %> 
+    <% if( friend.confirmation =="Waiting for confirmation") {%> 
+     
       <ul style="list-style: none;">
-       From : <a href="/news/<%=friend.friendshipRequesterSchoolId %>/<%=currentUser.id %>"> <%=friend.friendshipRequestersSchoolsName%></a> </h3>
+       From : <a href="/news/<%=friend.friendshipRequesterSchoolId %>/<%=currentUser.id %>"> <%=friend.friendrequestersname%></a> </h3>
           <a href="http:/friendshipconfirm/<%= friend.id  %>/<%= school.id %> "> Confirm</a> <br> 
         </ul>
+        <br/>
       <% } %> 
       <% } %> 
   <% } %> 
 
 
+  
+ 
 
-  <% for (let friend of friendshipReqestSent) {%>  
+    
+    <% if( currentUser.username ==school.creator.username ) { %> 
+    <h4>Sent and waiting for confirmation</h4>
+   
+     <% for (let friend of allFriendships) {%>  
 
-    <% if(friend.confirmation=="Yes") {%> 
+    <% if((friend.confirmation=="Waiting for confirmation")&&(friend.friendshipRequesterSchoolId==sid)) {%> 
       <ul style="list-style: none;">
-        <li><a href="/news/<%= friend.schoolId %>/<%=currentUser.id %>"><%=friend.friendshipRequestedsSchoolsName %></a>  </li>
+        <li><a href="/news/<%= friend.schoolId %>/<%=currentUser.id %>"><%=friend.friendrequesteedtoname %></a>  </li>
       </ul>
       
     <% } %> 
     <% } %> 
-    <% if( currentUser.username ==school.creator.username ) { %> 
-    <h6>Sent and waiting for confirmation</h6>
-    <% } %> 
-   <% for (let friend of friendshipReqestSent) {%>  
-    <% if(friend.confirmation!="Yes") {%> 
+
+   <% for (let friend of sentFriendship) {%>  
+    <% if((friend.confirmation =="Waiting for confirmation")  ) {%> 
       <% if( currentUser.username ==school.creator.username ) { %> 
             <ul style="list-style: none;">
-        <li><a href="/news/<%= friend.schoolId %>/<%=currentUser.id %>"><%=friend.friendshipRequestedsSchoolsName %>  </a>  </li>
+        <!-- <li><a href="/news/<%= friend.schoolId %>/<%=currentUser.id %>"><%=friend.friendrequesteedtoname %>  </a>  </li> -->
       </ul>
+ <% } %> 
       <% } %> 
       <% } %> 
   <% } %>
 
-  <% if(isFriendshipRequestSent=="Yes") {%> 
+  
+
+
+ <% if(isFriendshipRequestSent=="Yes") {%> 
       you have already sent friendship request to this school!
-    <%if(ifYouAreAlreadyFriends=="Yes"){%>
-      and you are already friends
-    <% } %> 
+    
+
       <% if(haveYoureceivedFriendRequsestFromThisSchool=="Yes"){ %> 
         You are already friends
-      <% } %> 
+     <% } %> 
     <% } else {%>
       <%if(haveYoureceivedFriendRequsestFromThisSchool!="Yes"){  %> 
         <% if(currentUser.username !=school.creator.username ) { %> 
 
            <%  if(haveYoureceivedFriendRequsestFromThisSchoolNotConfirmed == "Yes"){ %> 
          
-           Yoy have Yreceived Friend Requsest From This School But Not Confirmed Yet
-              <% for (let friend of friendshipReqestSent) {%>  
+           You have Yreceived Friend Requsest From This School But Not Confirmed Yet
+
+                           <% for (let friend of friendshipReqestSent) {%>  
                 <% if( friend.friendshipRequesterSchoolId==school.id && friend.userIdWhichReceivedFriendshipRequest==currentUser.id ){ %> 
              <a href="http:/friendshipconfirm/<%= friend.id%>/<%=friend.schoolId %>   "> Confirm</a> <br> 
            <% } %> 
            <% } %> 
+            <%  }else{ %>    
+            <% if(haveYoureceivedFriendRequsestFromThisSchool=="Yes") {%> 
+              You have received friendship request from this school  
+              <%  }else{ %> 
+            <% if(youAreAlreadyFriends=="Yes") {%> 
+              you Are Already Friends 
+              <%  }else{ %> 
 
-            <%  }else{ %>      
           <a href="/requestfriendship/<%= school.id %>">Request Friendship with this School</a>
          
+    <% } %> 
+    <% } %> 
         <% } %> 
         <% } %> 
       <% } %> 
     <% } %> 
- 
 
-    <% if(haveYoureceivedFriendRequsestFromThisSchool=="Yes"){ %> 
-      You are already friends
-    <% } %> 
+    <% for (friend of allFriendships){ %> 
+    <% if ((friend.schoolId===sfId &&friend.friendshipRequesterSchoolId==sid) && (friend.confirmation=="Waiting for confirmation") ){ %> 
+   <h3>   You have received friendshio request from this school</h3>
+    <a href="http:/friendshipconfirm/<%= friend.id%>/<%=friend.schoolId %>   "> Confirm friendship request</a> <br> 
+      <% } %> 
+      <% } %> 
+
+    
+ <br>
+ <br>
+
  <br>
         </div>
       </div>

@@ -58,7 +58,7 @@ const schoolSchema = new mongoose.Schema({
     },
   ],
   creator: {
-    id: {
+    id:{
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
